@@ -2,3 +2,5 @@ help/__pycache__/__init__.cpython-39.pyc
 help/__pycache__/api.cpython-39.pyc
 help/__pycache__/data.cpython-39.pyc
 help/__pycache__/tool.cpython-39.pyc
+results/test
+results/test.csv

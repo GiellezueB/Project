@@ -34,7 +34,7 @@ class EventData():
         self.data.index = [chr(ord('a') + i) for i in range(len(self.data))]
 
         # Change column order
-        self.data = self.data[['method', 'timestamp', 'location', 'location_coords', 'transportmode', 'confirmed']]
+        self.data = self.data[['method', 'timestamp', 'event', 'location', 'location_coords', 'transportmode', 'confirmed']]
         
         # Drop NA
         self.data = self.data.dropna(subset=['timestamp', 'location'])
@@ -43,11 +43,11 @@ class EventData():
         # Shortcut to get a two-column dataframe, with all combinations of size two of all the events
         pairs = list(itertools.combinations(self.data.index, 2))
         possible_routes = pd.DataFrame(zip(*pairs)).T
-        possible_routes = possible_routes.rename(columns= {0: 'start_event', 1: 'end_event'})
+        possible_routes = possible_routes.rename(columns= {0: 'start_idx', 1: 'end_idx'})
 
         # After getting all the possible routes, we merge it with the original data to get all corresponding coordinates
-        possible_routes = pd.merge(possible_routes, self.data.add_prefix('start_'), how='left', left_on='start_event', right_index=True)
-        possible_routes = pd.merge(possible_routes, self.data.add_prefix('end_'), how='left', left_on='end_event', right_index=True)
+        possible_routes = pd.merge(possible_routes, self.data.add_prefix('start_'), how='left', left_on='start_idx', right_index=True)
+        possible_routes = pd.merge(possible_routes, self.data.add_prefix('end_'), how='left', left_on='end_idx', right_index=True)
 
         # Based on the sightings we can get the difference between the start and end timestamp to get a suspected 'speed'
         possible_routes['duration'] = (possible_routes['end_timestamp'] - possible_routes['start_timestamp']).dt.total_seconds()
@@ -129,7 +129,7 @@ class EventData():
             prob = np.mean(data_timeline['probability'])
             
             df_all_combinations.append((route_name, len(combination), prob))
-            
+
         self.ranking = pd.DataFrame(df_all_combinations, columns=['combination', 'combination_len', 'probability']).sort_values(['probability', 'combination_len'], ascending=False)
         return self.ranking
     

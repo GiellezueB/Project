@@ -8,6 +8,7 @@ import pandas as pd
 import tksheet
 import os
 
+from tkinter import messagebox as mb
 from tkinter import filedialog, ttk
 from tkinter import *
 
@@ -375,9 +376,10 @@ class Timex():
             data = self.event_data.data.loc[selected_route]
             coords = list(data['location_coords'])
             timestamps = list(data['timestamp'])
+            events = list(data['event'])
             locations = list(data['location'])
             
-            self.mbs_api.plot_directions(coords, timestamps, locations, fn)
+            self.mbs_api.plot_directions(coords, timestamps, locations, events, fn)
         
     def get_plot(self, output="show"):
         plt.clf()
@@ -417,39 +419,46 @@ class Timex():
         if self.filter_car.get() == 0:
             self.filtered_data = self.filtered_data[self.filtered_data['transportmode'] != 'By car']
 
-        self.event_data = EventData(data=self.filtered_data, mbs_api=self.mbs_api)
+        try:
+            self.event_data = EventData(data=self.filtered_data, mbs_api=self.mbs_api)
+        except KeyError:
+            mb.showerror(title='Error!', message= 'Something is wrong with your data! Please provide it in the defined data structure.')
         
     def get_ranking_data(self):
-        self.crime_idx = self.event_data.data[self.event_data.data['method'] == 'Delict'].index.values[0]
-        self.age = int(self.ent_age.get())
-        
-        if self.use_histTraf.get() == 1:
-            self.routing_data = self.event_data.get_possible_routes(age=self.age, include_historical_traffic=True)
-        else:
-            self.routing_data = self.event_data.get_possible_routes(age=self.age, include_historical_traffic=False)
+        try:
+            self.crime_idx = self.event_data.data[self.event_data.data['method'] == 'Delict'].index.values[0]
+            self.age = int(self.ent_age.get())
             
-        self.possible_combinations = self.event_data.get_possible_combinations(min_length=int(self.filter_eventamount.get()))   
-        self.ranking_data = self.event_data.get_ranking()
-        
-        self.ranking_data_hp = self.ranking_data[self.ranking_data['combination'].str.contains(self.crime_idx)]
-        self.ranking_data_hd = self.ranking_data[~self.ranking_data['combination'].str.contains(self.crime_idx)]
-        
-        hp_mean, hp_var = self.ranking_data_hp['probability'].mean(), self.ranking_data_hp['probability'].var()
-        hd_mean, hd_var = self.ranking_data_hd['probability'].mean(), self.ranking_data_hd['probability'].var()
-        
-        self.route_combobox['values'] = ["".join(c) for c in self.possible_combinations]
-        self.route_combobox.current(0)
-        
-        self.h_val_label.config(text=f"Hp: {hp_mean:.2f} ({hp_var:.2f}). Hd: {hd_mean:.2f} ({hd_var:.2f})")
-        
-        self.show_ranking_button['state'] = 'active'
-        self.show_distribution_button['state'] = 'active'
-        
-        self.export_ranking_button['state'] = 'active'
-        self.export_route_button['state'] = 'active'
-        self.export_route_vis_button['state'] = 'active'
-        self.export_plot_button['state'] = 'active'
-        
+            if self.use_histTraf.get() == 1:
+                self.routing_data = self.event_data.get_possible_routes(age=self.age, include_historical_traffic=True)
+            else:
+                self.routing_data = self.event_data.get_possible_routes(age=self.age, include_historical_traffic=False)
+                
+            self.possible_combinations = self.event_data.get_possible_combinations(min_length=int(self.filter_eventamount.get()))   
+            self.ranking_data = self.event_data.get_ranking()
+            
+            self.ranking_data_hp = self.ranking_data[self.ranking_data['combination'].str.contains(self.crime_idx)]
+            self.ranking_data_hd = self.ranking_data[~self.ranking_data['combination'].str.contains(self.crime_idx)]
+            
+            hp_mean, hp_var = self.ranking_data_hp['probability'].mean(), self.ranking_data_hp['probability'].var()
+            hd_mean, hd_var = self.ranking_data_hd['probability'].mean(), self.ranking_data_hd['probability'].var()
+            
+            self.route_combobox['values'] = list(self.ranking_data['combination'])
+            self.route_combobox.current(0)
+            
+            self.h_val_label.config(text=f"Hp: {hp_mean:.2f} ({hp_var:.2f}). Hd: {hd_mean:.2f} ({hd_var:.2f})")
+            
+            self.show_ranking_button['state'] = 'active'
+            self.show_distribution_button['state'] = 'active'
+            
+            self.export_ranking_button['state'] = 'active'
+            self.export_route_button['state'] = 'active'
+            self.export_route_vis_button['state'] = 'active'
+            self.export_plot_button['state'] = 'active'
+            
+        except Exception as e:
+            mb.showerror(title = f'Error! {e}', message='Something is wrong with your data! Please provide it in the defined data structure.')
+            
     def run(self):
         self.root.mainloop()
         

@@ -61,7 +61,7 @@ class MapBoxService():
 
             return req_data
                 
-    def plot_directions(self, coords, timestamps, locations, filename):
+    def plot_directions(self, coords, timestamps, locations, events, filename):
         client = openrouteservice.Client(key='5b3ce3597851110001cf6248e71bc6969df240ac8acdc15daf25a457')
         res = client.directions(coords)
         geometry = client.directions(coords)['routes'][0]['geometry']
@@ -77,8 +77,12 @@ class MapBoxService():
         for idx, coord in enumerate(coords):
             location_txt = "<h4> <b>Location :&nbsp" + "<strong>"+ locations[idx] +" Km </strong>" +"</h4></b>"
             timestamp_txt = "<h4> <b>Timestamp :&nbsp" + "<strong>"+ str(timestamps[idx]) +" Mins. </strong>" +"</h4></b>"
+            event_txt = "<h4> <b>event :&nbsp" + "<strong>"+ str(events[idx]) +"</strong>" +"</h4></b>"
             
-            popup = folium.Popup(location_txt+timestamp_txt,max_width=300)
+            popup = folium.Popup(
+                location_txt + timestamp_txt + event_txt,
+                max_width=300)
+            
             folium.Marker(
                 location=coord[::-1],
                 icon=folium.Icon(color="green"),
