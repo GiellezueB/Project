@@ -1,0 +1,9 @@
+﻿method,responsible,timestamp,location,event,transportmode,confirmed
+Delict,Tactiek,08/06/2013 13:46,"Koestraat, Zwolle",Geld overmaken,On foot,No
+Zendmasten,Tactiek,08/06/2013 12:50,"Gijsbrechtgaarde, Apeldoorn",Telefoongesprek,On foot,No
+Zendmasten,Tactiek,08/06/2013 13:10,"Gijsbrechtgaarde, Apeldoorn",Telefoongesprek,On foot,Yes
+Camerabeelden,Tactiek,08/06/2013 13:33,"Koestraat, Zwolle",Richting Pd,By car,No
+Camerabeelden,Tactiek,08/06/2013 14:09,"Koestraat, Zwolle",Geld overmaken,On foot,No
+Camerabeelden,Tactiek,08/06/2013 14:56,"Koestraat, Zwolle",Vanaf Pd,On foot,Yes
+Bankgegevens,Tactiek,08/06/2013 15:45,"De Eglantier, Apeldoorn",Geld pinnen,On foot,Yes
+Bankgegevens,Tactiek,08/06/2013 15:51,"De Eglantier, Apeldoorn",Geld pinnen,On foot,Yes
