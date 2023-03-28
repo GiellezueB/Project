@@ -58,6 +58,7 @@ class EventData():
                                                                                                     mode=x['end_transportmode'],
                                                                                                     include_historical_traffic=include_historical_traffic,
                                                                                                     timestamp=x['start_timestamp']), axis=1)
+        possible_routes.dropna(subset='directions')
         
         # This is where we grab the distance between point A and point B, as given by Mapbox.
         possible_routes['distance_api'] = possible_routes['directions'].apply(lambda x: x['routes'][0]['distance'])

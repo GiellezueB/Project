@@ -54,6 +54,7 @@ class MapBoxService():
             req = requests.get(url=url, headers=self.headers)
         except UnboundLocalError:
             print(start, end, mode, timestamp)
+            return None
             
         if (req.status_code == 200):
             req_data = req.json()
